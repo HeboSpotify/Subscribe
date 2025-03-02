@@ -80,21 +80,21 @@ async function submitData() {
     if (isPhoneMode) {
         // Validate phone only if phone input is active
         if (!phone) {
-            showMessage("please enter a phone number.", "red");
+            showMessage("Please enter a phone number.", "red");
             return;
         }
         if (!isPhoneValid(phone)) {
-            showMessage("invalid phone number", "red");
+            showMessage("Phone number must be 7-20 digits and contain only numbers.", "red");
             return;
         }
     } else {
         // Validate email only if email input is active
         if (!email) {
-            showMessage("please enter an e-mail", "red");
+            showMessage("Please enter an email.", "red");
             return;
         }
         if (!isEmailValid(email)) {
-            showMessage("invalid e-mail", "red");
+            showMessage("Please enter a valid email in the format name@domain.com.", "red");
             return;
         }
     }
@@ -126,7 +126,7 @@ async function submitData() {
             body: JSON.stringify({ subscribers })
         });
 
-        showMessage("thank you for subscribing.", "green");
+        showMessage("Subscription successful!", "green");
         phoneInput.value = "";
         emailInput.value = "";
     } catch (error) {
