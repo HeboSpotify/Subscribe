@@ -41,13 +41,13 @@ toggleText.addEventListener("click", () => {
     if (phoneInput.style.display !== "none") {
         phoneInput.style.display = "none";
         emailInput.style.display = "block";
-        inputLabel.textContent = "Enter your email to subscribe:";
-        toggleText.textContent = "Or enter phone number";
+        inputLabel.textContent = "enter your e-mail to subscribe.";
+        toggleText.textContent = "or, enter your phone number";
     } else {
         phoneInput.style.display = "block";
         emailInput.style.display = "none";
-        inputLabel.textContent = "Enter your phone number to subscribe:";
-        toggleText.textContent = "Or enter e-mail";
+        inputLabel.textContent = "enter your phone number to subscribe.";
+        toggleText.textContent = "or, enter e-mail";
     }
 });
 
@@ -70,23 +70,23 @@ async function submitData() {
     const isPhoneMode = phoneInput.style.display !== "none"; 
 
     if (isPhoneMode) {
-        // Validate phone only if phone input is active
+      
         if (!phone) {
-            showMessage("Please enter a phone number.", "red");
+            showMessage("please enter a phone number.", "red");
             return;
         }
         if (!isPhoneValid(phone)) {
-            showMessage("Phone number must be 7-20 digits and contain only numbers.", "red");
+            showMessage("invalid phone number.", "red");
             return;
         }
     } else {
         // Validate email only if email input is active
         if (!email) {
-            showMessage("Please enter an email.", "red");
+            showMessage("please enter an e-mail address.", "red");
             return;
         }
         if (!isEmailValid(email)) {
-            showMessage("Please enter a valid email in the format name@domain.com.", "red");
+            showMessage("invalid email.", "red");
             return;
         }
     }
@@ -101,7 +101,7 @@ async function submitData() {
         const jsonData = await response.json();
         subscribers = jsonData.record.subscribers || [];
     } catch (error) {
-        showMessage("Error fetching data. Try again.", "red");
+        showMessage("error fetching data, try again.", "red");
         return;
     }
 
@@ -117,11 +117,11 @@ async function submitData() {
             body: JSON.stringify({ subscribers })
         });
 
-        showMessage("Subscription successful!", "green");
+        showMessage("subscription successful, thank you.", "green");
         phoneInput.value = "";
         emailInput.value = "";
     } catch (error) {
-        showMessage("Error saving data. Try again.", "red");
+        showMessage("error saving data, try again", "red");
     }
 }
 
