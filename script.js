@@ -1,10 +1,8 @@
 const API_URL = "https://api.jsonbin.io/v3/b/67c0bf48ad19ca34f813b071";
 const API_KEY = "$2a$10$C/bZ.9QKRFFL5DaOPNi7mOa7/aFI74EeAAGvOBgjRahOzttwD/wY.";
 
-const phoneInput = document.getElementById("phone");
 const emailInput = document.getElementById("email");
 const submitButton = document.getElementById("submit");
-const toggleText = document.getElementById("toggle-text");
 const inputLabel = document.getElementById("input-label");
 
 const overlay = document.getElementById("overlay");
@@ -12,49 +10,11 @@ const messageBox = document.getElementById("message-box");
 const messageText = document.getElementById("message-text");
 const okButton = document.getElementById("ok-button");
 
-// Input glow effect
-function applyGlowEffect(element) {
-    element.style.transition = "box-shadow 0.3s ease-in-out";
-    element.style.boxShadow = "0px 0px 10px rgba(0, 255, 255, 0.7)";
-
-    setTimeout(() => {
-        element.style.boxShadow = "0px 0px 5px rgba(0, 255, 255, 0.4)";
-    }, 300);
-}
-
-phoneInput.addEventListener("focus", () => applyGlowEffect(phoneInput));
-emailInput.addEventListener("focus", () => applyGlowEffect(emailInput));
-
-// Ensure phone input only allows numbers (0-9)
-phoneInput.addEventListener("input", () => {
-    phoneInput.value = phoneInput.value.replace(/\D/g, "");
-});
-
-// Validate phone number (only if phone input is visible)
-function isPhoneValid(phone) {
-    return /^[0-9]{7,20}$/.test(phone);
-}
-
-// Validate email format (only if email input is visible)
+// Validate email format
 function isEmailValid(email) {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
 }
-
-// Toggle between phone & email input
-toggleText.addEventListener("click", () => {
-    if (phoneInput.style.display !== "none") {
-        phoneInput.style.display = "none";
-        emailInput.style.display = "block";
-        inputLabel.textContent = "Enter your email to subscribe:";
-        toggleText.textContent = "Or enter phone number";
-    } else {
-        phoneInput.style.display = "block";
-        emailInput.style.display = "none";
-        inputLabel.textContent = "Enter your phone number to subscribe:";
-        toggleText.textContent = "Or enter e-mail";
-    }
-});
 
 // Show message popup
 function showMessage(text, color) {
@@ -73,30 +33,16 @@ okButton.addEventListener("click", () => {
 
 // Submit data
 async function submitData() {
-    const phone = phoneInput.value.trim();
     const email = emailInput.value.trim();
-    const isPhoneMode = phoneInput.style.display !== "none"; // Check which input is active
 
-    if (isPhoneMode) {
-        // Validate phone only if phone input is active
-        if (!phone) {
-            showMessage("Please enter a phone number.", "red");
-            return;
-        }
-        if (!isPhoneValid(phone)) {
-            showMessage("Phone number must be 7-20 digits and contain only numbers.", "red");
-            return;
-        }
-    } else {
-        // Validate email only if email input is active
-        if (!email) {
-            showMessage("Please enter an email.", "red");
-            return;
-        }
-        if (!isEmailValid(email)) {
-            showMessage("Please enter a valid email in the format name@domain.com.", "red");
-            return;
-        }
+    // Validate email
+    if (!email) {
+        showMessage("Please enter an email.", "red");
+        return;
+    }
+    if (!isEmailValid(email)) {
+        showMessage("Please enter a valid email in the format name@domain.com.", "red");
+        return;
     }
 
     let subscribers = [];
@@ -113,8 +59,8 @@ async function submitData() {
         return;
     }
 
-    // Add new entry (no duplicate restriction)
-    subscribers.push({ phone: isPhoneMode ? phone : null, email: !isPhoneMode ? email : null });
+    // Add new email entry
+    subscribers.push({ email });
 
     try {
         await fetch(API_URL, {
@@ -127,7 +73,6 @@ async function submitData() {
         });
 
         showMessage("Subscription successful!", "green");
-        phoneInput.value = "";
         emailInput.value = "";
     } catch (error) {
         showMessage("Error saving data. Try again.", "red");
