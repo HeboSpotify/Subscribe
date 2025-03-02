@@ -12,6 +12,7 @@ const messageBox = document.getElementById("message-box");
 const messageText = document.getElementById("message-text");
 const okButton = document.getElementById("ok-button");
 
+// Input glow effect
 function applyGlowEffect(element) {
     element.style.transition = "box-shadow 0.3s ease-in-out";
     element.style.boxShadow = "0px 0px 10px rgba(0, 255, 255, 0.7)";
@@ -24,33 +25,38 @@ function applyGlowEffect(element) {
 phoneInput.addEventListener("focus", () => applyGlowEffect(phoneInput));
 emailInput.addEventListener("focus", () => applyGlowEffect(emailInput));
 
+// Ensure phone input only allows numbers (0-9)
 phoneInput.addEventListener("input", () => {
     phoneInput.value = phoneInput.value.replace(/\D/g, "");
 });
 
+// Validate phone number (only if phone input is visible)
 function isPhoneValid(phone) {
     return /^[0-9]{7,20}$/.test(phone);
 }
 
+// Validate email format (only if email input is visible)
 function isEmailValid(email) {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
 }
 
+// Toggle between phone & email input
 toggleText.addEventListener("click", () => {
     if (phoneInput.style.display !== "none") {
         phoneInput.style.display = "none";
         emailInput.style.display = "block";
-        inputLabel.textContent = "enter your e-mail to subscribe.";
-        toggleText.textContent = "or, enter your phone number";
+        inputLabel.textContent = "Enter your email to subscribe:";
+        toggleText.textContent = "Or enter phone number";
     } else {
         phoneInput.style.display = "block";
         emailInput.style.display = "none";
-        inputLabel.textContent = "enter your phone number to subscribe.";
-        toggleText.textContent = "or, enter e-mail";
+        inputLabel.textContent = "Enter your phone number to subscribe:";
+        toggleText.textContent = "Or enter e-mail";
     }
 });
 
+// Show message popup
 function showMessage(text, color) {
     messageText.textContent = text;
     messageText.style.color = color;
@@ -59,34 +65,36 @@ function showMessage(text, color) {
     messageBox.classList.add("active");
 }
 
+// Hide message popup
 okButton.addEventListener("click", () => {
     overlay.classList.remove("active");
     messageBox.classList.remove("active");
 });
 
+// Submit data
 async function submitData() {
     const phone = phoneInput.value.trim();
     const email = emailInput.value.trim();
-    const isPhoneMode = phoneInput.style.display !== "none"; 
+    const isPhoneMode = phoneInput.style.display !== "none"; // Check which input is active
 
     if (isPhoneMode) {
-      
+        // Validate phone only if phone input is active
         if (!phone) {
             showMessage("please enter a phone number.", "red");
             return;
         }
         if (!isPhoneValid(phone)) {
-            showMessage("invalid phone number.", "red");
+            showMessage("invalid phone number", "red");
             return;
         }
     } else {
         // Validate email only if email input is active
         if (!email) {
-            showMessage("please enter an e-mail address.", "red");
+            showMessage("please enter an e-mail", "red");
             return;
         }
         if (!isEmailValid(email)) {
-            showMessage("invalid email.", "red");
+            showMessage("invalid e-mail", "red");
             return;
         }
     }
@@ -101,10 +109,11 @@ async function submitData() {
         const jsonData = await response.json();
         subscribers = jsonData.record.subscribers || [];
     } catch (error) {
-        showMessage("error fetching data, try again.", "red");
+        showMessage("Error fetching data. Try again.", "red");
         return;
     }
 
+    // Add new entry (no duplicate restriction)
     subscribers.push({ phone: isPhoneMode ? phone : null, email: !isPhoneMode ? email : null });
 
     try {
@@ -117,11 +126,11 @@ async function submitData() {
             body: JSON.stringify({ subscribers })
         });
 
-        showMessage("subscription successful, thank you.", "green");
+        showMessage("thank you for subscribing.", "green");
         phoneInput.value = "";
         emailInput.value = "";
     } catch (error) {
-        showMessage("error saving data, try again", "red");
+        showMessage("Error saving data. Try again.", "red");
     }
 }
 
